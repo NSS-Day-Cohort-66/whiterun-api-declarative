@@ -5,10 +5,40 @@ from repository import db_get_single, db_get_all, db_delete, db_update
 class HaulerView():
 
     def get(self, handler, pk):
+        parsed_url = handler.parse_url(handler.path)
         if pk != 0:
-            sql = "SELECT h.id, h.name, h.dock_id FROM Hauler h WHERE h.id = ?"
-            query_results = db_get_single(sql, pk)
-            serialized_hauler = json.dumps(dict(query_results))
+            if '_expand' in parsed_url['query_params'] and 'docks' in parsed_url['query_params']['_expand']:
+                sql = """SELECT 
+                h.id,
+                h.name,
+                h.dock_id,
+                d.id AS dockId,
+                d.location,
+                d.capacity
+                FROM Hauler h
+                JOIN Dock d
+				ON h.dock_id = dockId
+				WHERE h.id = ?
+                """
+                query_results = db_get_single(sql,pk)
+
+                dock = {
+                        "id": query_results['dockId'],
+                        "location": query_results['location'],
+                        "capacity": query_results['capacity']
+                    }
+                hauler = {
+                        "id": query_results['id'],
+                        "name": query_results['name'],
+                        "dock_id": query_results['dock_id'],
+                        "dock": dock
+                    }
+
+                serialized_hauler = json.dumps(dict(hauler))
+            else:
+                sql = "SELECT h.id, h.name, h.dock_id FROM Hauler h WHERE h.id = ?"
+                query_results = db_get_single(sql, pk)
+                serialized_hauler = json.dumps(dict(query_results))
 
             return handler.response(serialized_hauler, status.HTTP_200_SUCCESS.value)
         else:

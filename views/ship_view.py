@@ -8,12 +8,12 @@ class ShippingShipsView():
     def add(self, handler, ship_data):
         sql = """
         INSERT INTO 'Ship' VALUES (null, ?, ?)
-        """,
+        """
         number_of_rows_created = db_create(
             sql,
             (ship_data['name'], ship_data['hauler_id']))
         if number_of_rows_created > 0:
-            return handler.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
         else:
             return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
         

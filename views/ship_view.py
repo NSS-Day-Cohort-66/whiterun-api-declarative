@@ -12,8 +12,12 @@ class ShippingShipsView():
         number_of_rows_created = db_create(
             sql,
             (ship_data['name'], ship_data['hauler_id']))
+        response_sql = "SELECT s.id, s.name, s.hauler_id FROM Ship s"
+        query_response = db_get_all(response_sql)
+        row_ships = [dict(row) for row in query_response]
+        response_ships = json.dumps(row_ships)
         if number_of_rows_created > 0:
-            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+            return handler.response(response_ships, status.HTTP_201_SUCCESS_CREATED.value)
         else:
             return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
         

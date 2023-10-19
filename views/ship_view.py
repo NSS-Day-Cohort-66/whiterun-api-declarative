@@ -5,6 +5,18 @@ from repository import db_get_single, db_get_all, db_delete, db_update, db_creat
 
 class ShippingShipsView():
 
+    def add(self, handler, ship_data):
+        sql = """
+        INSERT INTO 'Ship' VALUES (null, ?, ?)
+        """,
+        number_of_rows_created = db_create(
+            sql,
+            (ship_data['name'], ship_data['hauler_id']))
+        if number_of_rows_created > 0:
+            return handler.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+        else:
+            return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+        
     def get(self, handler, pk):
         if pk != 0:
             sql = "SELECT s.id, s.name, s.hauler_id FROM Ship s WHERE s.id = ?"

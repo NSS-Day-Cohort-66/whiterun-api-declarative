@@ -1,9 +1,21 @@
 import json
 from nss_handler import status
-from repository import db_get_single, db_get_all, db_delete, db_update
+from repository import db_get_single, db_get_all, db_delete, db_update, db_create
 
 class DocksView():
 
+    def add(self, handler, dock_data):
+
+        sql = """
+        INSERT INTO 'Dock' VALUES (null, ?, ?)
+        """
+        number_of_rows_created = db_create(
+            sql,
+            (dock_data['location'], dock_data['capacity']))
+        if number_of_rows_created > 0:
+            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+        else:
+            return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
     def get(self, handler, pk):
         if pk != 0:
             sql = """

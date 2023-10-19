@@ -12,8 +12,12 @@ class DocksView():
         number_of_rows_created = db_create(
             sql,
             (dock_data['location'], dock_data['capacity']))
+        response_sql = "SELECT id, location, capacity FROM DOCK"
+        query_results = db_get_all(response_sql)
+        row_docks = [dict(row) for row in query_results]
+        response_docks = json.dumps(row_docks)
         if number_of_rows_created > 0:
-            return handler.response("", status.HTTP_201_SUCCESS_CREATED.value)
+            return handler.response(response_docks, status.HTTP_201_SUCCESS_CREATED.value)
         else:
             return handler.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
     def get(self, handler, pk):

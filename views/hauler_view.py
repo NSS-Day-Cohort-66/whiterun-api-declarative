@@ -23,7 +23,7 @@ class HaulerView():
     def get(self, handler, pk):
         parsed_url = handler.parse_url(handler.path)
         if pk != 0:
-            if '_expand' in parsed_url['query_params'] and 'docks' in parsed_url['query_params']['_expand']:
+            if '_expand' in parsed_url['query_params'] and 'dock' in parsed_url['query_params']['_expand']:
                 sql = """SELECT 
                 h.id,
                 h.name,
